@@ -78,90 +78,105 @@ const invoices = [
     amount: 15795,
     status: 'pending',
     date: '2022-12-06',
+    category: 'food'
   },
   {
     customer_id: customers[1].id,
     amount: 20348,
     status: 'pending',
     date: '2022-11-14',
+    category: 'clothing'
   },
   {
     customer_id: customers[4].id,
     amount: 3040,
     status: 'paid',
     date: '2022-10-29',
+    category: 'beverage'
   },
   {
     customer_id: customers[3].id,
     amount: 44800,
     status: 'paid',
     date: '2023-09-10',
+    category: 'clothing'
   },
   {
     customer_id: customers[5].id,
     amount: 34577,
     status: 'pending',
     date: '2023-08-05',
+    category: 'beverage'
   },
   {
     customer_id: customers[7].id,
     amount: 54246,
     status: 'pending',
     date: '2023-07-16',
+    category: 'clothing'
   },
   {
     customer_id: customers[6].id,
     amount: 666,
     status: 'pending',
     date: '2023-06-27',
+    category: 'beverage'
   },
   {
     customer_id: customers[3].id,
     amount: 32545,
     status: 'paid',
     date: '2023-06-09',
+    category: 'food'
   },
   {
     customer_id: customers[4].id,
     amount: 1250,
     status: 'paid',
     date: '2023-06-17',
+    category: 'food'
   },
   {
     customer_id: customers[5].id,
     amount: 8546,
     status: 'paid',
     date: '2023-06-07',
+    category: 'beverage'
   },
   {
     customer_id: customers[1].id,
     amount: 500,
     status: 'paid',
     date: '2023-08-19',
+    category: 'clothing'
   },
   {
     customer_id: customers[5].id,
     amount: 8945,
     status: 'paid',
     date: '2023-06-03',
+    category: 'food'
   },
   {
     customer_id: customers[2].id,
     amount: 8945,
     status: 'paid',
     date: '2023-06-18',
+    category: 'beverage'
   },
   {
     customer_id: customers[0].id,
     amount: 8945,
     status: 'paid',
     date: '2023-10-04',
+    category: 'clothing'
   },
   {
     customer_id: customers[2].id,
     amount: 1000,
     status: 'paid',
     date: '2022-06-05',
+    category: 'food'
   },
 ];
 
