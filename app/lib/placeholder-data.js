@@ -72,96 +72,130 @@ const customers = [
   },
 ];
 
+const categories = [
+  {
+    id: '3958dc9e-700f-4377-85e9-fec4b6a6442a',
+    name: 'food',
+  },
+  {
+    id: '3958dc9e-701f-4377-85e9-fec4b6a6442a',
+    name: 'beverage',
+  },
+  {
+    id: '3958dc9e-702f-4377-85e9-fec4b6a6442a',
+    name: 'clothing',
+  },
+  {
+    id: '3958dc9e-703f-4377-85e9-fec4b6a6442a',
+    name: 'furniture',
+  },
+];
+
 const invoices = [
   {
     customer_id: customers[0].id,
     amount: 15795,
     status: 'pending',
     date: '2022-12-06',
+    category_id: categories[0].id
   },
   {
     customer_id: customers[1].id,
     amount: 20348,
     status: 'pending',
     date: '2022-11-14',
+    category_id: categories[2].id
   },
   {
     customer_id: customers[4].id,
     amount: 3040,
     status: 'paid',
     date: '2022-10-29',
+    category_id: categories[1].id
   },
   {
     customer_id: customers[3].id,
     amount: 44800,
     status: 'paid',
     date: '2023-09-10',
+    category_id: categories[2].id
   },
   {
     customer_id: customers[5].id,
     amount: 34577,
     status: 'pending',
     date: '2023-08-05',
+    category_id: categories[1].id
   },
   {
     customer_id: customers[7].id,
     amount: 54246,
     status: 'pending',
     date: '2023-07-16',
+    category_id: categories[2].id
   },
   {
     customer_id: customers[6].id,
     amount: 666,
     status: 'pending',
     date: '2023-06-27',
+    category_id: categories[1].id,
   },
   {
     customer_id: customers[3].id,
     amount: 32545,
     status: 'paid',
     date: '2023-06-09',
+    category_id: categories[0].id
   },
   {
     customer_id: customers[4].id,
     amount: 1250,
     status: 'paid',
     date: '2023-06-17',
+    category_id: categories[0].id
   },
   {
     customer_id: customers[5].id,
     amount: 8546,
     status: 'paid',
     date: '2023-06-07',
+    category_id: categories[1].id
   },
   {
     customer_id: customers[1].id,
     amount: 500,
     status: 'paid',
     date: '2023-08-19',
+    category_id: categories[2].id
   },
   {
     customer_id: customers[5].id,
     amount: 8945,
     status: 'paid',
     date: '2023-06-03',
+    category_id: categories[0].id
   },
   {
     customer_id: customers[2].id,
     amount: 8945,
     status: 'paid',
     date: '2023-06-18',
+    category_id: categories[1].id
   },
   {
     customer_id: customers[0].id,
     amount: 8945,
     status: 'paid',
     date: '2023-10-04',
+    category_id: categories[2].id
   },
   {
     customer_id: customers[2].id,
     amount: 1000,
     status: 'paid',
     date: '2022-06-05',
+    category_id: categories[0].id
   },
 ];
 
@@ -183,6 +217,7 @@ const revenue = [
 module.exports = {
   users,
   customers,
+  categories,
   invoices,
   revenue,
 };

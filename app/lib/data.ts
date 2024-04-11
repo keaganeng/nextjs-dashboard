@@ -2,11 +2,13 @@ import { sql } from '@vercel/postgres';
 import {
   CustomerField,
   CustomersTableType,
+  CategoriesTableType,
   InvoiceForm,
   InvoicesTable,
   LatestInvoiceRaw,
   User,
   Revenue,
+  CategoryField,
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -107,17 +109,20 @@ export async function fetchFilteredInvoices(
         invoices.amount,
         invoices.date,
         invoices.status,
+        categories.name AS category,
         customers.name,
         customers.email,
         customers.image_url
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
+      JOIN categories ON invoices.category_id = categories.id
       WHERE
         customers.name ILIKE ${`%${query}%`} OR
         customers.email ILIKE ${`%${query}%`} OR
         invoices.amount::text ILIKE ${`%${query}%`} OR
         invoices.date::text ILIKE ${`%${query}%`} OR
-        invoices.status ILIKE ${`%${query}%`}
+        invoices.status ILIKE ${`%${query}%`} OR
+        categories.name ILIKE ${`%${query}%`}
       ORDER BY invoices.date DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
@@ -132,15 +137,18 @@ export async function fetchFilteredInvoices(
 export async function fetchInvoicesPages(query: string) {
   noStore();
   try {
-    const count = await sql`SELECT COUNT(*)
+    const count = await sql`
+    SELECT COUNT(*)
     FROM invoices
     JOIN customers ON invoices.customer_id = customers.id
+    JOIN categories ON invoices.category_id = categories.id
     WHERE
       customers.name ILIKE ${`%${query}%`} OR
       customers.email ILIKE ${`%${query}%`} OR
       invoices.amount::text ILIKE ${`%${query}%`} OR
       invoices.date::text ILIKE ${`%${query}%`} OR
-      invoices.status ILIKE ${`%${query}%`}
+      invoices.status ILIKE ${`%${query}%`} OR
+      categories.name ILIKE ${`%${query}%`}
   `;
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
@@ -159,7 +167,8 @@ export async function fetchInvoiceById(id: string) {
         invoices.id,
         invoices.customer_id,
         invoices.amount,
-        invoices.status
+        invoices.status,
+        invoices.category_id
       FROM invoices
       WHERE invoices.id = ${id};
     `;
@@ -227,6 +236,55 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
+  }
+}
+
+export async function fetchCategories() {
+  try {
+    const data = await sql<CategoryField>`
+      SELECT
+        id,
+        name
+      FROM categories
+      ORDER BY name ASC
+    `;
+
+    const categories = data.rows;
+    return categories;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all categories.');
+  }
+}
+
+export async function fetchFilteredCategories(query: string) {
+  noStore();
+  try {
+    const data = await sql<CategoriesTableType>`
+		SELECT
+		  categories.id,
+		  categories.name,
+		  COUNT(invoices.id) AS total_invoices,
+		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
+		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
+		FROM categories
+		LEFT JOIN invoices ON categories.id = invoices.category_id
+		WHERE
+		  categories.name ILIKE ${`%${query}%`}
+		GROUP BY categories.id, categories.name
+		ORDER BY categories.name ASC
+	  `;
+
+    const categories = data.rows.map((category) => ({
+      ...category,
+      total_pending: formatCurrency(category.total_pending),
+      total_paid: formatCurrency(category.total_paid),
+    }));
+
+    return categories;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch category table.');
   }
 }
 

@@ -2,6 +2,7 @@ const { db } = require('@vercel/postgres');
 const {
   invoices,
   customers,
+  categories,
   revenue,
   users,
 } = require('../app/lib/placeholder-data.js');
@@ -49,7 +50,6 @@ async function seedUsers(client) {
 async function seedInvoices(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-
     // Create the "invoices" table if it doesn't exist
     const createTable = await client.sql`
     CREATE TABLE IF NOT EXISTS invoices (
@@ -57,7 +57,8 @@ async function seedInvoices(client) {
     customer_id UUID NOT NULL,
     amount INT NOT NULL,
     status VARCHAR(255) NOT NULL,
-    date DATE NOT NULL
+    date DATETIME NOT NULL,
+    category_id UUID NOT NULL
   );
 `;
 
@@ -67,8 +68,8 @@ async function seedInvoices(client) {
     const insertedInvoices = await Promise.all(
       invoices.map(
         (invoice) => client.sql`
-        INSERT INTO invoices (customer_id, amount, status, date)
-        VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
+        INSERT INTO invoices (customer_id, amount, status, date, category_id)
+        VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date}, ${invoice.category_id})
         ON CONFLICT (id) DO NOTHING;
       `,
       ),
@@ -125,6 +126,43 @@ async function seedCustomers(client) {
   }
 }
 
+async function seedCategories(client) {
+  try {
+    await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+    // Create the "categories" table if it doesn't exist
+    const createTable = await client.sql`
+      CREATE TABLE IF NOT EXISTS categories (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        name VARCHAR(255) NOT NULL
+      );
+    `;
+
+    console.log(`Created "categories" table`);
+
+    // Insert data into the "categories" table
+    const insertedCategories = await Promise.all(
+      categories.map(
+        (category) => client.sql`
+        INSERT INTO categories (id, name)
+        VALUES (${category.id}, ${category.name})
+        ON CONFLICT (id) DO NOTHING;
+      `,
+      ),
+    );
+
+    console.log(`Seeded ${insertedCategories.length} categories`);
+
+    return {
+      createTable,
+      categories: insertedCategories,
+    };
+  } catch (error) {
+    console.error('Error seeding categories:', error);
+    throw error;
+  }
+}
+
 async function seedRevenue(client) {
   try {
     // Create the "revenue" table if it doesn't exist
@@ -165,6 +203,7 @@ async function main() {
 
   await seedUsers(client);
   await seedCustomers(client);
+  await seedCategories(client);
   await seedInvoices(client);
   await seedRevenue(client);
 
