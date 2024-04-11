@@ -19,8 +19,8 @@ const FormSchema = z.object({
         invalid_type_error: 'Please select an invoice status.',
     }),
     date: z.string(),
-    category: z.enum(['food', 'beverage', 'clothing'], {
-        invalid_type_error: 'Please select an invoice category.',
+    categoryId: z.string({
+        invalid_type_error: 'Please select a category.',
     }),
   });
    
@@ -33,7 +33,7 @@ export type State = {
       customerId?: string[];
       amount?: string[];
       status?: string[];
-      category?: string[];
+      categoryId?: string[];
     };
     message?: string | null;
 };
@@ -44,7 +44,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
         customerId: formData.get('customerId'),
         amount: formData.get('amount'),
         status: formData.get('status'),
-        category: formData.get('category'),
+        categoryId: formData.get('categoryId'),
     });
 
     // If form validation fails, return errors early. Otherwise, continue.
@@ -56,14 +56,14 @@ export async function createInvoice(prevState: State, formData: FormData) {
     }
 
     // Prepare data for insertion into the database
-    const { customerId, amount, status, category } = validatedFields.data;
+    const { customerId, amount, status, categoryId } = validatedFields.data;
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split('T')[0];
 
     try {
         await sql`
-        INSERT INTO invoices (customer_id, amount, status, date, category)
-        VALUES (${customerId}, ${amountInCents}, ${status}, ${date}, ${category})
+        INSERT INTO invoices (customer_id, amount, status, date, category_id)
+        VALUES (${customerId}, ${amountInCents}, ${status}, ${date}, ${categoryId})
     `;
     } catch (error) {
         return {
@@ -80,7 +80,7 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
         customerId: formData.get('customerId'),
         amount: formData.get('amount'),
         status: formData.get('status'),
-        category: formData.get('category'),
+        categoryId: formData.get('categoryId'),
     });
 
     // If form validation fails, return errors early. Otherwise, continue.
@@ -92,13 +92,13 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
       }
     
     // Prepare data for insertion into the database
-    const { customerId, amount, status, category } = validatedFields.data;
+    const { customerId, amount, status, categoryId } = validatedFields.data;
     const amountInCents = amount * 100;
    
     try {
         await sql`
         UPDATE invoices
-        SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}, category= ${category}
+        SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}, category_id = ${categoryId}
         WHERE id = ${id}
       `;
     } catch (error) {
