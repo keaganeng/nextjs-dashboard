@@ -25,6 +25,8 @@ export default function EditInvoiceForm({
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
   const [state, dispatch] = useFormState(updateInvoiceWithId, initialState);
 
+  console.log(categories);
+
   return (
     <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
@@ -123,7 +125,7 @@ export default function EditInvoiceForm({
             Choose category
           </label>
           <div className="relative">
-            <select
+            {/* <select
               id="category"
               name="categoryId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
@@ -137,8 +139,28 @@ export default function EditInvoiceForm({
                   {category.name}
                 </option>
               ))}
-            </select>
-            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </select> */}
+            {/* <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" /> */}
+            <input 
+              list="category" 
+              name="categoryName" 
+              id="categories"
+              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+            />
+              <datalist 
+                id="categoryName"
+                // name="categoryId"
+                defaultValue={invoice.category_id}
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
+                {categories.map((category) => (
+                  <option key={category.name} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
+              </datalist>
           </div>
           <div id="category-error" aria-live="polite" aria-atomic="true">
             {state.errors?.categoryId &&

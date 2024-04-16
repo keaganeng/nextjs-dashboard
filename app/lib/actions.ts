@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { fetchCategoryId } from '@/app/lib/data';
 
 const FormSchema = z.object({
     id: z.string(),
@@ -19,7 +20,7 @@ const FormSchema = z.object({
         invalid_type_error: 'Please select an invoice status.',
     }),
     date: z.string(),
-    categoryId: z.string({
+    categoryName: z.string({
         invalid_type_error: 'Please select a category.',
     }),
   });
@@ -56,9 +57,10 @@ export async function createInvoice(prevState: State, formData: FormData) {
     }
 
     // Prepare data for insertion into the database
-    const { customerId, amount, status, categoryId } = validatedFields.data;
+    const { customerId, amount, status, categoryName } = validatedFields.data;
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split('T')[0];
+    const categoryId = await fetchCategoryId(categoryName);
 
     try {
         await sql`
@@ -80,7 +82,7 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
         customerId: formData.get('customerId'),
         amount: formData.get('amount'),
         status: formData.get('status'),
-        categoryId: formData.get('categoryId'),
+        categoryName: formData.get('categoryName'),
     });
 
     // If form validation fails, return errors early. Otherwise, continue.
@@ -92,8 +94,11 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
       }
     
     // Prepare data for insertion into the database
-    const { customerId, amount, status, categoryId } = validatedFields.data;
+    const { customerId, amount, status, categoryName } = validatedFields.data;
     const amountInCents = amount * 100;
+    const categoryId = await fetchCategoryId(categoryName);
+
+    console.log(id, categoryId, customerId, amount, status, categoryName);
    
     try {
         await sql`

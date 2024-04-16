@@ -239,6 +239,26 @@ export async function fetchFilteredCustomers(query: string) {
   }
 }
 
+export async function fetchCategoryId(categoryName: string) {
+  try {
+    const data = await sql<CategoryField>`
+      SELECT id
+      FROM categories
+      WHERE categories.name = ${categoryName}
+    `;
+
+    const categoryIds = data.rows;
+
+    if (categoryIds.length == 1)
+      return categoryIds[0].id;
+    else
+      return null;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch category ID.');
+  }
+}
+
 export async function fetchCategories() {
   try {
     const data = await sql<CategoryField>`
